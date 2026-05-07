@@ -1,3 +1,5 @@
+package basic;
+
 public class JavaStater {
 
     public static void main(String[] args) {
