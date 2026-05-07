@@ -11,7 +11,8 @@ public class SprintLogApp {
 //        javaLog.minutes = -374872;
 //        javaLog.publicLog = false; 모든 필드가 private 접근 제한자를 지정했기 때문에 값을 참조하거나 수정이 불가능해 집니다.
 
-        javaLog.minutes = 100;
+        javaLog.setMinutes(200);
+
 
         javaLog.printSummary();
 
