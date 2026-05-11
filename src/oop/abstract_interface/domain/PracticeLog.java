@@ -12,11 +12,6 @@ public class PracticeLog extends LearningActivity implements Reviewable, Shareab
         this.completionRate = normalizeCompletionRate(completionRate);
     }
 
-    @Override
-    public void printSummary() {
-        System.out.println("[실습] #" + getId() + " " + getTitle() + " - " + getMinutes()
-                + "분 - 완료율: " + completionRate + "%");
-    }
 
     @Override
     public boolean needsReview() {
@@ -25,7 +20,7 @@ public class PracticeLog extends LearningActivity implements Reviewable, Shareab
 
     @Override
     public void printReviewTarget() {
-        printSummary();
+        System.out.println("[복습 권장] " + getTitle() + " (완료율: " + completionRate + "%)");
     }
 
     public int getCompletionRate() {
@@ -52,6 +47,16 @@ public class PracticeLog extends LearningActivity implements Reviewable, Shareab
     @Override
     public String getShareTitle() {
         return getTitle();
+    }
+
+    @Override
+    public String getActivityType() {
+        return "실습";
+    }
+
+    @Override
+    public String getDetailText() {
+        return "완료율: " + completionRate + "%";
     }
 }
 

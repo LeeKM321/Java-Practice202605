@@ -51,10 +51,8 @@ public abstract class LearningActivity {
     }
 
 
-    // 추상메서드는 메서드 바디가 없는 메서드의 틀 역할을 합니다.
-    // 특정 메서드는 부모가 대충 정해버리는 것보다, 자식이 반드시 자기 방식대로 구현하게 하는 편이 명확할 때가 있습니다.
-    // 추상메서드는 자식에게 물려질 때 오버라이딩을 강제합니다. 반드시 구현해야 합니다.
-    public abstract void printSummary();
+    public abstract String getActivityType(); // 강의, 실습, 독서
+    public abstract String getDetailText(); // 유형별 세부 정보
 
     public static int getTotalCreateCount() {
         return totalCreateCount;
@@ -74,5 +72,9 @@ public abstract class LearningActivity {
 
     public boolean ispublicActivity() {
         return publicActivity;
+    }
+
+    public String getVisibilityText() {
+        return publicActivity ? "공개" : "비공개";
     }
 }
