@@ -37,6 +37,7 @@ public class SprintLogApp {
 
     /** switch 문 + enum 조합 시연. */
     private static void printCategoryGuide(ActivityCategory category) {
+        // 정수나 문자열 이외에 Enum도 switch의 괄호 안에 기준으로서 들어갈 수 있습니다.
         switch (category) {
             case LECTURE  -> System.out.println("강의: 핵심 개념을 놓치지 않았는지 확인합니다.");
             case PRACTICE -> System.out.println("실습: 직접 손으로 흐름을 만들어보는 것이 중요합니다.");
