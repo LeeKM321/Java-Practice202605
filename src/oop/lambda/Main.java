@@ -105,8 +105,43 @@ public class Main {
         List<String> filter2 = FilterApple.filter(foods, f -> f.length() == 3);
         System.out.println(filter2);
 
+        System.out.println("===========================================================");
+
+        // 이번에는 사과의 색상만 싹 뽑아서 리스트로 받아보고 싶어요.
+        List<Color> colorList = MappingApple.mappingAppleByColor(appleBasket);
+        System.out.println("colorList = " + colorList);
+
+        System.out.println("===========================================================");
+
+        // 그럼 이번엔 사과의 무게만 뽑아봐!
+        // 내가 나중엔 사과 리스트 말고 다른 리스트를 줄 수도 있어!
+        List<Integer> map1 = MappingApple.map(appleBasket, new GenericFunction<Apple, Integer>() {
+            @Override
+            public Integer apply(Apple apple) {
+                return apple.getWeight();
+            }
+        });
+        System.out.println("map1 = " + map1);
+
+        System.out.println("===========================================================");
+
+        // 숫자 리스트를 주면 제곱된 수를 가져와
+        List<Integer> map2 = MappingApple.map(numbers, n -> (int) Math.pow(n, 4));
+        System.out.println("map2 = " + map2);
+
+        System.out.println("===========================================================");
+
+        // 음식 리스트를 주면 첫글자만 뽑아와
+        List<Character> map3 = MappingApple.map(foods, f -> f.charAt(0));
+        System.out.println("map3 = " + map3);
 
 
     }
 
 }
+
+
+
+
+
+
