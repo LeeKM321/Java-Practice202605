@@ -83,14 +83,29 @@ public class Main {
 
         System.out.println("===========================================================");
 
-        // 색깔이 빨강 혹은 초록이면서, 무게는 150g 미만이어야 합니다.
+        // 색깔이 빨강 혹은 초록이면서, 무게는 150g 초과이어야 합니다.
         // 논리 연산에서 and가 or보다 우선입니다!
         List<Apple> apples3 = FilterApple.filterApple(appleBasket,
-                apple -> apple.getColor() == RED || apple.getColor() == GREEN && apple.getWeight() < 80);
+                apple -> (apple.getColor() == RED
+                        || apple.getColor() == GREEN)
+                        && apple.getWeight() > 150);
 
         for (Apple apple : apples3) {
             System.out.println(apple);
         }
+
+        System.out.println("===========================================================");
+
+        // 여러가지 타입의 객체를 필터링
+        List<Integer> numbers = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        List<Integer> filter1 = FilterApple.filter(numbers, n -> n % 2 == 0);
+        System.out.println(filter1);
+
+        List<String> foods = List.of("짜장면", "짬뽕", "탕수육", "피자", "삼겹살", "파스타");
+        List<String> filter2 = FilterApple.filter(foods, f -> f.length() == 3);
+        System.out.println(filter2);
+
+
 
     }
 

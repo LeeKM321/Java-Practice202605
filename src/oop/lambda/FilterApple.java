@@ -67,9 +67,29 @@ public class FilterApple {
         return filteredBasket;
     }
 
+    /**
+     * problem - 이제는 Apple 리스트만 오는게 아니다!
+     * Integer도 오고, String도 필터링 해달라고 한다....
+     *
+     * solution - try4: 제네릭 필터 메서드 선언
+     *
+     * 리턴 타입 앞에 붙는 <T>는 이 메서드가 제네릭을 사용하는 메서드고, 지금부터 T라는 임시 타입을 선언한다.
+     * T는 이 메서드가 호출될 때 결정 될거야.
+     *
+     * @return
+     */
 
+    public static <T> List<T> filter(List<T> basket, GenericPredicate<T> predicate) {
+        List<T> filteredBasket = new ArrayList<>();
 
+        for (T t : basket) {
+            if (predicate.test(t)) {
+                filteredBasket.add(t);
+            }
+        }
 
+        return filteredBasket;
+    }
 
 
 
