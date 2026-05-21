@@ -42,4 +42,8 @@ public class ReadingLog extends LearningActivity implements Reviewable, Shareabl
     public String getDetailText() {
         return "책: " + bookTitle;
     }
+
+    public String getBookTitle() {
+        return bookTitle;
+    }
 }
