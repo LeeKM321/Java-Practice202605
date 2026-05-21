@@ -1,10 +1,8 @@
 package etc.fileio.repository;
 
-import etc.fileio.domain.LearningActivity;
-import etc.fileio.domain.LectureLog;
-import etc.fileio.domain.PracticeLog;
-import etc.fileio.domain.ReadingLog;
+import etc.fileio.domain.*;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -76,6 +74,7 @@ public class ActivityRepository<T extends LearningActivity> {
 
     // CSV 영속화 ----------------------------------------------------------------------
 
+    // 저장소의 모든 활동 객체를 CSV 파일로 저장한다.
     public void saveToFile(Path csvPath) throws IOException {
         Path parent = csvPath.getParent();
         if (parent != null) {
@@ -94,8 +93,97 @@ public class ActivityRepository<T extends LearningActivity> {
                 writer.newLine();
             }
         }
+    }
+
+    // CSV 파일을 읽어 LearningActivity 레포지토리로 복원
+    public static ActivityRepository<LearningActivity> loadFromFile(Path csvPath) throws IOException {
+
+        ActivityRepository<LearningActivity> repository = new ActivityRepository<>();
+
+        try (BufferedReader reader = Files.newBufferedReader(csvPath, StandardCharsets.UTF_8)) {
+            reader.readLine(); // 헤더 행 건너뛰기 (다음 줄을 읽기는 해야 되는데, 변수에 담지는 않겠다)
+
+            String line;
+            // 한 행을 읽어 들여서 line 변수에 할당한 그 결과가 null이 아니라면 true
+            while ((line = reader.readLine()) != null) {
+                LearningActivity activity = parseCsvRow(line);
+                repository.add(activity);
+            }
+        }
+        return repository;
+    }
+
+    // "LECTURE,Stream 이론,55,PUBLIC,이론;stream,박코치,,"
+    private static LearningActivity parseCsvRow(String line) throws IOException {
+        // 두 번째 매개값 -1: 끝에 오는 빈 필드도 결과 배열에 포함시킨다.
+        String[] cols = line.split(",", -1);
+        if (cols.length < 8) {
+            throw new IOException("CSV 컬럼 수가 부족합니다. (8개 필요, 실제 " + cols.length + "개)");
+        }
+
+        String type = cols[0];
+        String title = cols[1];
+        int minutes;
+        try {
+            minutes = Integer.parseInt(cols[2]);
+        } catch (NumberFormatException e) {
+            throw new IOException("minutes 컬럼이 정수가 아닙니다: " + cols[2], e);
+        }
+
+        Visibility visibility;
+        try {
+            visibility = Visibility.valueOf(cols[3]);
+        } catch (IllegalArgumentException e) {
+            throw new IOException("알 수 없는 visibility 값: " + cols[3], e);
+        }
+
+        String tagsField = cols[4];
+        String instructorName = cols[5];
+        String completionRateField = cols[6];
+        String bookTitle = cols[7];
+
+        ActivityCategory category;
+        try {
+            category = ActivityCategory.valueOf(type);
+        } catch (IllegalArgumentException e) {
+            throw new IOException("알 수 없는 활동 유형: " + type, e);
+        }
+
+        LearningActivity activity;
+        switch (category) {
+            case LECTURE:
+                activity = new LectureLog(title, minutes, visibility, instructorName);
+                break;
+            case PRACTICE:
+                int completionRate;
+                try {
+                    completionRate = Integer.parseInt(completionRateField);
+                } catch (NumberFormatException e) {
+                    throw new IOException("completionRate가 정수가 아닙니다: "
+                            + completionRateField, e);
+                }
+                activity = new PracticeLog(title, minutes, visibility, completionRate);
+                break;
+            case READING:
+                activity = new ReadingLog(title, minutes, visibility, bookTitle);
+                break;
+            default:
+                throw new IOException("처리할 수 없는 활동 유형: " + type);
+        }
+
+        // 태그 복원
+        if (!tagsField.isBlank()) {
+            for (String tag : tagsField.split(";")) {
+                if (!tag.isBlank()) {
+                    activity.addTag(tag);
+                }
+            }
+        }
+
+        return activity;
 
     }
+
 
     /**
      * 활동을 CSV 한 행으로 직렬화한다.
