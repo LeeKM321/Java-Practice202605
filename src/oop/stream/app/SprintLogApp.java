@@ -2,6 +2,7 @@ package oop.stream.app;
 
 
 import oop.stream.domain.*;
+import oop.stream.repository.ActivityRepository;
 import oop.stream.service.ActivityDashboard;
 
 import java.util.*;
@@ -293,6 +294,48 @@ public class SprintLogApp {
         System.out.println("총 생성된 활동 수: " + LearningActivity.getTotalCreatedCount());
 
 
+        // ── 11. 제네릭 레포지토리 — 타입별 저장소 ───────────────
+        System.out.println();
+        System.out.println("=== ActivityRepository<T> — 제네릭 레포지토리 ===");
+
+        // LectureLog만 담는 레포지토리 — 다른 타입을 add()하면 컴파일 오류
+        ActivityRepository<LectureLog> lectureRepo = new ActivityRepository<>();
+        lectureRepo.add((LectureLog) l1);
+        lectureRepo.add((LectureLog) l2);
+        lectureRepo.add((LectureLog) l3);
+
+        // PracticeLog만 담는 레포지토리
+        ActivityRepository<PracticeLog> practiceRepo = new ActivityRepository<>();
+        practiceRepo.add((PracticeLog) p1);
+        practiceRepo.add((PracticeLog) p2);
+        practiceRepo.add((PracticeLog) p3);
+
+        ActivityRepository<ReadingLog>  readingRepo = new ActivityRepository<>();
+        readingRepo.add((ReadingLog) r1);
+        readingRepo.add((ReadingLog) r2);
+
+        // findAll() 반환 타입이 List<LectureLog> — 캐스팅 없이 바로 쓴다
+        List<LectureLog> allLectures = lectureRepo.findAll();
+        System.out.println("강의 레포지토리 — 저장된 수: " + lectureRepo.count() + "개");
+        System.out.println("강의 레포지토리 — 총 학습 시간: " + lectureRepo.getTotalMinutes() + "분");
+
+        // filter()도 타입 안전 — Predicate<LectureLog>, 결과도 List<LectureLog>
+        List<LectureLog> publicLectures = lectureRepo.filter(LearningActivity::isPublicActivity);
+        System.out.println("공개 강의: " + publicLectures.size() + "개");
+        publicLectures.forEach(lec -> System.out.println("  " + lec.getTitle()
+                + " [강사: " + lec.getInstructorName() + "]"));
+
+        System.out.println("실습 레포지토리 — 저장된 수: " + practiceRepo.count() + "개");
+        System.out.println("실습 레포지토리 — 총 학습 시간: " + practiceRepo.getTotalMinutes() + "분");
+
+        Optional<PracticeLog> first
+                = practiceRepo.findFirst(a -> a.getCompletionRate() >= 70);
+
+        first.ifPresent(practiceLog -> System.out.println("findFirst의 결과: " + practiceLog));
+
+
+        System.out.println();
+        System.out.println("총 생성된 활동 수: " + LearningActivity.getTotalCreatedCount());
 
 
     }
