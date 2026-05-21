@@ -116,7 +116,7 @@ public class ActivityDashboard {
     // 카테고리별 그룹화 -------------------------------------------------
     // 카테고리별로 활동(Log)을 그룹화해서 Map으로 반환한다.
     public Map<ActivityCategory, List<LearningActivity>> groupByCategory() {
-        Map<ActivityCategory, List<LearningActivity>> result = new HashMap<>();
+        Map<ActivityCategory, List<LearningActivity>> result = new TreeMap<>(); // HashMap -> TreeMap으로 변경: 카테고리(enum) 선언 순서대로 정렬되어 출력이 일관된다.
         for (LearningActivity activity : activities) {
             ActivityCategory cat = activity.getCategory();
 
@@ -130,6 +130,15 @@ public class ActivityDashboard {
             list.add(activity);
         }
         return result;
+    }
+
+    // 모든 활동에서 태그를 모아 알파벳순 정렬 Set으로 반환한다.
+    public Set<String> getSortedTagSet() {
+        Set<String> tags = new TreeSet<>();
+        for (LearningActivity activity : activities) {
+            tags.addAll(activity.getTags());
+        }
+        return Collections.unmodifiableSet(tags);
     }
 
 

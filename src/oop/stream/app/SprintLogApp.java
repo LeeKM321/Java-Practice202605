@@ -2,12 +2,9 @@ package oop.stream.app;
 
 
 import oop.stream.domain.*;
+import oop.stream.service.ActivityDashboard;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.IntSummaryStatistics;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -277,5 +274,26 @@ public class SprintLogApp {
 
         System.out.println();
         System.out.println("총 생성된 활동 수: " + LearningActivity.getTotalCreatedCount());
+
+        // ── 9. TreeMap — 카테고리별 활동 수 (정렬 보장) ────────
+        System.out.println();
+        System.out.println("=== 카테고리별 활동 수 (TreeMap — 정렬된 순서) ===");
+        ActivityDashboard dashboard = new ActivityDashboard(activities);
+        Map<ActivityCategory, List<LearningActivity>> grouped2 = dashboard.groupByCategory();
+        grouped2.forEach((cat, list) ->
+                System.out.println(cat.getLabel() + ": " + list.size() + "개"));
+
+        // ── 10. TreeSet — 정렬된 태그 목록 ─────────────────────
+        System.out.println();
+        System.out.println("=== 등록된 태그 목록 (TreeSet — 알파벳 정렬) ===");
+        Set<String> sortedTags = dashboard.getSortedTagSet();
+        System.out.println("태그: " + sortedTags);
+
+        System.out.println();
+        System.out.println("총 생성된 활동 수: " + LearningActivity.getTotalCreatedCount());
+
+
+
+
     }
 }
