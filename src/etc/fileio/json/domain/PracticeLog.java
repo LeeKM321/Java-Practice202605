@@ -1,5 +1,7 @@
 package etc.fileio.json.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import etc.fileio.json.policy.Reviewable;
 import etc.fileio.json.policy.Shareable;
 
@@ -9,7 +11,11 @@ public class PracticeLog extends LearningActivity implements Reviewable, Shareab
 
     private int completionRate; // PracticeLog만 가지는 고유한 필드
 
-    public PracticeLog(String title, int minutes, Visibility visibility, int completionRate) {
+    @JsonCreator
+    public PracticeLog(@JsonProperty("title") String title,
+                       @JsonProperty("minutes") int minutes,
+                       @JsonProperty("visibility") Visibility visibility,
+                       @JsonProperty("completionRate") int completionRate) {
         super(title, minutes, visibility, ActivityCategory.PRACTICE);
         this.completionRate = normalizeCompletionRate(completionRate);
     }

@@ -84,43 +84,23 @@ public class SprintLogApp {
 
         activities.addAll(List.of(l1, l2, l3, p1, p2, p3, r1, r2));
 
-
-        // ── 11. 제네릭 레포지토리 — 타입별 저장소 ───────────────
-        System.out.println("=== ActivityRepository<T> — 제네릭 레포지토리 ===");
-
-        // LectureLog만 담는 레포지토리 — 다른 타입을 add()하면 컴파일 오류
-        ActivityRepository<LectureLog> lectureRepo = new ActivityRepository<>();
-        lectureRepo.add((LectureLog) l1);
-        lectureRepo.add((LectureLog) l2);
-        lectureRepo.add((LectureLog) l3);
-
-        // PracticeLog만 담는 레포지토리
-        ActivityRepository<PracticeLog> practiceRepo = new ActivityRepository<>();
-        practiceRepo.add((PracticeLog) p1);
-        practiceRepo.add((PracticeLog) p2);
-        practiceRepo.add((PracticeLog) p3);
-
-        ActivityRepository<ReadingLog> readingRepo = new ActivityRepository<>();
-        readingRepo.add((ReadingLog) r1);
-        readingRepo.add((ReadingLog) r2);
-
-        // ── 12. CSV 영속화 - File I/O ───────────────
-
-        // CSV 파일을 한번에 작성하려고 슈퍼타입 레포에 담아서 저장
         ActivityRepository<LearningActivity> allRepo = new ActivityRepository<>();
         for (LearningActivity a : activities) {
             allRepo.add(a);
         }
 
-        Path csvPath = Path.of("data/activities.csv");
-        allRepo.saveToFile(csvPath);
-        System.out.println("CSV 저장 완료: " + csvPath.toAbsolutePath());
-        System.out.println(allRepo.count() + "건 저장됨!");
-
-
-        System.out.println();
-        System.out.println("총 생성된 활동 수: " + LearningActivity.getTotalCreatedCount());
+        Path jsonPath = Path.of("data/activities.json");
+        allRepo.saveToJson(jsonPath);
+        System.out.println("JSON 저장 완료: " + jsonPath.toAbsolutePath()
+                + "(" + allRepo.count() + "건)");
 
 
     }
 }
+
+
+
+
+
+
+

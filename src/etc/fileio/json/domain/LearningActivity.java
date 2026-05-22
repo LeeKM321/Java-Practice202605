@@ -1,11 +1,27 @@
 package etc.fileio.json.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import etc.fileio.json.exception.InvalidActivityException;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+// 다형성을 어떻게 표현할 지 정의.
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME, // 타입을 이름으로 식별
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type" // JSON에 type이라는 필드를 추가해서 거기에 이름을 넣겠다
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = LectureLog.class, name = "LECTURE"),
+        @JsonSubTypes.Type(value = PracticeLog.class, name = "PRACTICE"),
+        @JsonSubTypes.Type(value = ReadingLog.class, name = "READING")
+})
+@JsonIgnoreProperties({"id", "category"}) // id와 category 필드는 JSON 데이터에 포함시키지 말아라.
 public abstract class LearningActivity {
 
     private static int totalCreateCount = 0;
@@ -53,6 +69,20 @@ public abstract class LearningActivity {
     public boolean hasTag(String tag) {
         if (tag == null) return false;
         return tags.contains(tag.trim().toLowerCase());
+    }
+
+    // tags 필드는 final이라 Jackson이 직접 set 하기가 어렵다.
+    // tags가 Set인데, final이라 Set 자체를 통째로 갈아 끼울 수가 없다.
+    // JSON에서 읽어온 Set 내용을 하나씩 tags에 add 시켜주는 메서드
+    @JsonProperty("tags") // tags 필드를 세팅 할 때 이 메서드를 써라!
+    private void setTagsFromJson(Set<String> incoming) {
+        if (incoming == null) return;
+        this.tags.clear();
+        for (String tag : incoming) {
+            if (tag != null && !tag.isBlank()) {
+                this.tags.add(tag.trim().toLowerCase());
+            }
+        }
     }
 
 

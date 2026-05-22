@@ -10,9 +10,9 @@ public class LoadMain {
 
     public static void main(String[] args) throws IOException {
 
-        Path csvPath = Path.of("data/activities.csv");
+        Path jsonPath = Path.of("data/activities.json");
         ActivityRepository<LearningActivity> loadedRepo
-                = ActivityRepository.loadFromFile(csvPath);
+                = ActivityRepository.loadFromJson(jsonPath);
 
         System.out.println("CSV 로드 완료: " + loadedRepo.count() + "건");
         loadedRepo.findAll().forEach(a -> System.out.println("- " + a.getActivityType()

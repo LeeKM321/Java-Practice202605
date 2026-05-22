@@ -1,5 +1,9 @@
 package etc.fileio.json.repository;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import etc.fileio.json.domain.*;
 
 import java.io.BufferedReader;
@@ -212,6 +216,57 @@ public class ActivityRepository<T extends LearningActivity> {
                 type, title, minutes, visibility, tags,
                 instructorName, completionRate, bookTitle);
 
+    }
+
+
+    // JSON 영속화 -------------------------------------------------------------------------
+
+    public void saveToJson(Path jsonPath) throws IOException {
+        Path parent = jsonPath.getParent();
+        if (parent != null) {
+            Files.createDirectories(parent);
+        }
+
+        ObjectMapper mapper = createObjectMapper();
+        // TypeReference 로 List<LearningActivity> 타입을 명시한다.
+        // 명시하지 않으면 제네릭 타입 소거로 supertype 정보가 사라져
+        // @JsonTypeInfo 가 무시되고 type 필드가 JSON 에 들어가지 않는다.
+        mapper.writerFor(new TypeReference<List<LearningActivity>>() {})
+                .withDefaultPrettyPrinter()
+                .writeValue(jsonPath.toFile(), storage);
+    }
+
+    public static ActivityRepository<LearningActivity> loadFromJson(Path jsonPath) throws IOException {
+        ObjectMapper mapper = createObjectMapper();
+        List<LearningActivity> activities = mapper.readValue(
+                jsonPath.toFile(),
+                new TypeReference<List<LearningActivity>>() {}
+        );
+
+        ActivityRepository<LearningActivity> repository = new ActivityRepository<>();
+        for (LearningActivity a : activities) {
+            repository.add(a);
+        }
+        return repository;
+    }
+
+    /**
+     * Jackson ObjectMapper 를 SprintLog 도메인 규칙에 맞게 설정한다.
+     *
+     * 설정 의미:
+     * - GETTER / IS_GETTER 가시성을 NONE 으로: derived getter (예: getVisibilityText,
+     *   isPublicActivity, getActivityType) 가 자동으로 JSON 필드가 되지 않게 막는다.
+     * - FIELD 가시성을 ANY 로: private 필드를 직접 직렬화 대상으로 삼는다.
+     *
+     * 결과적으로 도메인 클래스에는 derived getter 들에 @JsonIgnore 를
+     * 일일이 붙이지 않아도 된다.
+     */
+    private static ObjectMapper createObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibility(PropertyAccessor.GETTER,    JsonAutoDetect.Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.FIELD,     JsonAutoDetect.Visibility.ANY);
+        return mapper;
     }
 
 
