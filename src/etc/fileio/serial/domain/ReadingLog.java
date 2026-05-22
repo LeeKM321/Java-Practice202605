@@ -3,8 +3,11 @@ package etc.fileio.serial.domain;
 import etc.fileio.serial.policy.Reviewable;
 import etc.fileio.serial.policy.Shareable;
 
-public class ReadingLog extends LearningActivity implements Reviewable, Shareable {
+import java.io.Serializable;
 
+public class ReadingLog extends LearningActivity implements Reviewable, Shareable, Serializable {
+
+    private static final long serialVersionUID = 1L;
     private String bookTitle;
 
     public ReadingLog(String title, int minutes, Visibility visibility, String bookTitle) {

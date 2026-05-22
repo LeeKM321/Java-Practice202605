@@ -3,8 +3,12 @@ package etc.fileio.serial.domain;
 import etc.fileio.serial.policy.Reviewable;
 import etc.fileio.serial.policy.Shareable;
 
+import java.io.Serializable;
+
 // LectureLog는 LearningActivity의 한 종류이고, Reviewable에 선언된 역할도 수행할 수 있다.
-public class LectureLog extends LearningActivity implements Reviewable, Shareable {
+public class LectureLog extends LearningActivity implements Reviewable, Shareable, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public String instructorName; // 강사 이름 (LectureLog만 가지는 고유한 필드)
 

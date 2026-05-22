@@ -2,9 +2,7 @@ package etc.fileio.serial.repository;
 
 import etc.fileio.serial.domain.*;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -211,7 +209,30 @@ public class ActivityRepository<T extends LearningActivity> {
         return String.join(",",
                 type, title, minutes, visibility, tags,
                 instructorName, completionRate, bookTitle);
+    }
 
+    public void saveToBinary(Path binaryPath) throws IOException {
+        Path parent = binaryPath.getParent();
+        if (parent != null) {
+            Files.createDirectories(parent);
+        }
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(Files.newOutputStream(binaryPath)))) {
+            oos.writeObject(new ArrayList<>(storage));
+        }
+    }
+
+    public static ActivityRepository<LearningActivity> loadFromBinary(Path binaryPath) throws IOException, ClassNotFoundException {
+        ActivityRepository<LearningActivity> repository = new ActivityRepository<>();
+
+        try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(Files.newInputStream(binaryPath)))) {
+            List<LearningActivity> list = (List<LearningActivity>) ois.readObject();
+            for (LearningActivity a : list) {
+                repository.add(a);
+            }
+        }
+
+        return repository;
     }
 
 
