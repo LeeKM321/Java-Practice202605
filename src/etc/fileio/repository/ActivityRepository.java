@@ -106,6 +106,7 @@ public class ActivityRepository<T extends LearningActivity> {
             String line;
             // 한 행을 읽어 들여서 line 변수에 할당한 그 결과가 null이 아니라면 true
             while ((line = reader.readLine()) != null) {
+                if (line.isBlank()) continue;
                 LearningActivity activity = parseCsvRow(line);
                 repository.add(activity);
             }
